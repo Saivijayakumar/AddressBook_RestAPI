@@ -83,5 +83,27 @@ namespace TestingForAddressBook
             Assert.AreEqual(response1, HttpStatusCode.Created);
             Assert.AreEqual(response2, HttpStatusCode.Created);
         }
+        //UC 3:Update Values in json server useing id
+        [TestMethod]
+        public void UseingPUTMethodToUpdateEmployeesData()
+        {
+            RestRequest request = new RestRequest("/AddressBookContacts/2", Method.PUT);
+            JsonObject json = new JsonObject();
+            json.Add("firstName", "vijay");
+            json.Add("lastName", "Kiran");
+            json.Add("address", "Gandi nagar");
+            json.Add("city", "Kakinada");
+            json.Add("state", "TN");
+            json.Add("zip", 8876);
+            json.Add("phoneNumber", 994848849);
+            json.Add("Email", "vijay@gmail.com");
+            //directly adding json object to request
+            request.AddJsonBody(json);
+            IRestResponse response = client.Execute(request);
+            var result = JsonConvert.DeserializeObject<AddressBookData>(response.Content);
+            Console.WriteLine($"Id : {result.id}| Name : {result.firstName + " " + result.lastName}| Address : {result.address + " " + result.city + " " + result.state} | Zip : {result.zip}|" +
+                    $"PhoneNumber:{result.phoneNumber}|Email:{result.Email}");
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+        }
     }
 }
