@@ -17,7 +17,7 @@ namespace TestingForAddressBook
         {
             client = new RestClient("http://localhost:3000");
         }
-        public IRestResponse GetAllEmployees()
+        public IRestResponse GetAllContacts()
         {
             //Define method Type
             RestRequest request = new RestRequest("/AddressBookContacts", Method.GET);
@@ -30,7 +30,7 @@ namespace TestingForAddressBook
         [TestMethod]
         public void OnCallingGetMethodWeAreReturningContactData()
         {
-            IRestResponse response = GetAllEmployees();
+            IRestResponse response = GetAllContacts();
             //Deserialize json object to List
             var jsonObject = JsonConvert.DeserializeObject<List<AddressBookData>>(response.Content);
             foreach(var i in jsonObject)
@@ -85,7 +85,7 @@ namespace TestingForAddressBook
         }
         //UC 3:Update Values in json server useing id
         [TestMethod]
-        public void UseingPUTMethodToUpdateEmployeesData()
+        public void UseingPUTMethodToUpdateContactData()
         {
             RestRequest request = new RestRequest("/AddressBookContacts/2", Method.PUT);
             JsonObject json = new JsonObject();
@@ -104,6 +104,22 @@ namespace TestingForAddressBook
             Console.WriteLine($"Id : {result.id}| Name : {result.firstName + " " + result.lastName}| Address : {result.address + " " + result.city + " " + result.state} | Zip : {result.zip}|" +
                     $"PhoneNumber:{result.phoneNumber}|Email:{result.Email}");
             Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+        }
+        // Usecase 4: Delete the employee details using the id
+        [TestMethod]
+        public void UseingDELETEMethodToDeleteContact()
+        {
+            RestRequest request = new RestRequest("/AddressBookContacts/2", Method.DELETE);
+            IRestResponse response = client.Execute(request);
+            //checking the data after delete
+            IRestResponse getresponse = GetAllContacts();
+            var result = JsonConvert.DeserializeObject<List<AddressBookData>>(getresponse.Content);
+            foreach (var i in result)
+            {
+                Console.WriteLine($"Id : {i.id}| Name : {i.firstName + " " + i.lastName}| Address : {i.address + " " + i.city + " " + i.state} | Zip : {i.zip}|" +
+                    $"PhoneNumber:{i.phoneNumber}|Email:{i.Email}");
+            }
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
